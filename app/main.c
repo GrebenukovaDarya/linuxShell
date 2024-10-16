@@ -18,6 +18,38 @@ void save_history_to_file(char history[][BUFFER_SIZE], int count) {
     }
     fclose(file);
 }
+
+//binary file
+void binary_ex(const char *binary_name){
+   FILE *bfile = fopen(binary_name, "rb");
+   if (bfile == NULL){
+    perror ("error");
+    return;
+   }
+ fseek(bfile, 0, SEEK_END);
+ long bfile_size = ftell(bfile);
+ rewind(bfile);
+ unsigned char *buffer = (unsinged char *)malloc(bfile_size);
+ if (buffer == NULL) {
+  perror("error");
+  fclose(bfile);
+  return;
+ }
+size_t count = fread(buffer, 1, bfile_size, bfile);
+ if (count != bfile_size) {
+  perror("error");
+  free(buffer);
+  fclose(bfile);
+  return;
+ }
+  printf("содержимое бинарного файла %s:\n",binary_name);
+  for (long i=0; i<bfile_size ;i++){
+    printf("%02X ", buffer[i]);
+  }
+  printf("\n");
+  free(buffer);
+  fclose(bfile);
+}
  
 int main() {
     char input[BUFFER_SIZE];
@@ -56,14 +88,14 @@ int main() {
 
         //echo $PATH
         if(strcmp(input, "echo $PATH")==0) {
-                char *path = getenv("PATH");
-                if (path!=NULL){
-                        printf("%s\n", path);
-                }
-                else {
-                        printf("error \n");
-                }
-                continue;
+            char *path = getenv("PATH");
+            if (path!=NULL){
+                printf("%s\n", path);
+            }
+            else {
+                 printf("error \n");
+            }
+            continue;
         }
  
         // echo
@@ -71,8 +103,14 @@ int main() {
             printf("%s\n", input + 5);
             continue;
         }
+
+       //binary
+       if () {
+           binary_ex();
+            continue;
+       }
      
-        printf("Вы ввели: %s\n", input);
+        printf("input: %s\n", input);
        
     }
     while (!feof(stdin));
