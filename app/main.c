@@ -109,6 +109,14 @@ int main() {
            binary_ex();
             continue;
        }
+
+       // 9. По сигналу SIGHUP вывести "Configuration reloaded"
+        
+       //10. По `\l /dev/sda` получить информацию о разделах в системе
+        
+       //11. По `\cron` подключить VFS в /tmp/vfs со списком задач в планировщике
+        
+       //12. По `\mem <procid>` получить дамп памяти процесса
      
         printf("input: %s\n", input);
        
