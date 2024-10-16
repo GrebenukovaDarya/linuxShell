@@ -6,7 +6,7 @@
 #define HISTORY_SIZE 100
 #define HISTORY_FILE "command_history.txt"
  
-// Функция для записи истории команд в файл
+//history
 void save_history_to_file(char history[][BUFFER_SIZE], int count) {
     FILE *file = fopen(HISTORY_FILE, "a");
     if (file == NULL) {
@@ -20,34 +20,39 @@ void save_history_to_file(char history[][BUFFER_SIZE], int count) {
 }
  
 int main() {
-    char input[BUFFER_SIZE];                 // Буфер для ввода команд
-    char history[HISTORY_SIZE][BUFFER_SIZE]; // История команд
-    int history_count = 0;                   // Счётчик команд в истории
+    char input[BUFFER_SIZE];
+    char history[HISTORY_SIZE][BUFFER_SIZE];
+    int history_count = 0;
  
     do {
         printf("USER$ ");
         fflush(stdout);
 
-        // Чтение ввода с клавиатуры, проверка на EOF (Ctrl+D)
+        // input
         if (fgets(input, BUFFER_SIZE, stdin) == NULL) {
             printf("\nЗавершение работы (Ctrl+D)\n");
             break; // выход из цикла при EOF
         }
  
-        // Убираем символ новой строки, если он есть
+        // \n
         input[strcspn(input, "\n")] = '\0';
  
-        // Проверяем на команды выхода
+        // exit
         if (strcmp(input, "exit") == 0 || strcmp(input, "\\q") == 0) {
             printf("Завершение работы (exit/\\q)\n");
             break;
         }
 
-        // Сохраняем введённую команду в историю (если есть место)
+        // history
         if(history_count < HISTORY_SIZE) {
             strcpy(history[history_count], input);
             history_count++;
         }
+
+       if(history_count >= HISTORY_SIZE) {
+            history_count = 0;
+            //clear hostory_file
+       }
 
         //echo $PATH
         if(strcmp(input, "echo $PATH")==0) {
@@ -58,24 +63,22 @@ int main() {
                 else {
                         printf("error \n");
                 }
+                continue;
         }
  
-        // Проверяем команду echo
+        // echo
         if (strncmp(input, "echo ", 5) == 0) {
             printf("%s\n", input + 5);
             continue;
         }
- 
-        // Если это не команда выхода и не echo, просто выводим строку
+     
         printf("Вы ввели: %s\n", input);
        
     }
     while (!feof(stdin));
-    // Сохраняем историю команд в файл перед выходом
+ 
+    //history
     save_history_to_file(history, history_count);
  
     return 0;
 }
-/*
-8. Vipolnit ukazannij binarnic
-*/
