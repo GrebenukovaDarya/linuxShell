@@ -20,7 +20,6 @@ void save_history_to_file(char history[][BUFFER_SIZE], int count) {
     fclose(file);
 }
 
-//9
 void handle_SIGHUP(int signal) {
     if (signal == SIGHUP) {
         printf("Configuration reloaded\n");
@@ -87,7 +86,7 @@ int main() {
        }
 */
 
-       // 9. По сигналу SIGHUP вывести "Configuration reloaded"
+       // По сигналу SIGHUP вывести "Configuration reloaded"
         signal (SIGHUP, handle_SIGHUP);
         
        //10. По `\l /dev/sda` получить информацию о разделах в системе
