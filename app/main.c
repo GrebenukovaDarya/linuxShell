@@ -25,6 +25,12 @@ void handle_SIGHUP(int signal) {
         printf("Configuration reloaded\n");
     }
 }
+
+void binary_ex() {
+    //Qdir::currentPath();
+    //system();
+    
+}
  
 int main() {
     char input[BUFFER_SIZE];
