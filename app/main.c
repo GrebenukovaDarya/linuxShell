@@ -20,6 +20,7 @@ void save_history_to_file(char history[][BUFFER_SIZE], int count) {
     fclose(file);
 }
 
+//9
 void handle_SIGHUP(int signal) {
     if (signal == SIGHUP) {
         printf("Configuration reloaded\n");
@@ -90,23 +91,6 @@ int main() {
         signal (SIGHUP, handle_SIGHUP);
         
        //10. По `\l /dev/sda` получить информацию о разделах в системе
-/*
-        if (strncmp(input, "\l /dev/sda", 11) == 0) {
-            DWORD drives= GetLogicalDrives();
-            if (drives == 0) { 
-                printf("error \n");
-            }
-            else {
-                while(drives) {
-                    if (drives & 1)
-                        printf ("%s", (const char *)szDrive);
-                    ++szDrive[1];
-                    drives >>=1;
-                }
-            }
-            continue;
-        }
-*/
         
        //11. По `\cron` подключить VFS в /tmp/vfs со списком задач в планировщике
         
@@ -122,37 +106,3 @@ int main() {
  
     return 0;
 }
-
-/*
-//binary file
-void binary_ex(const char *binary_name){
-   FILE *bfile = fopen(binary_name, "rb");
-   if (bfile == NULL){
-    perror ("error");
-    return;
-   }
- fseek(bfile, 0, SEEK_END);
- long bfile_size = ftell(bfile);
- rewind(bfile);
- unsigned char *buffer = (unsinged char *)malloc(bfile_size);
- if (buffer == NULL) {
-  perror("error");
-  fclose(bfile);
-  return;
- }
-size_t count = fread(buffer, 1, bfile_size, bfile);
- if (count != bfile_size) {
-  perror("error");
-  free(buffer);
-  fclose(bfile);
-  return;
- }
-  printf("содержимое бинарного файла %s:\n",binary_name);
-  for (long i=0; i<bfile_size ;i++){
-    printf("%02X ", buffer[i]);
-  }
-  printf("\n");
-  free(buffer);
-  fclose(bfile);
-}
-*/
