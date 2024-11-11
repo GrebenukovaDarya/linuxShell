@@ -83,7 +83,16 @@ int main() {
         }
 
        //binary
-
+        if (strncmp(input, "run ", 4) == 0){
+            pid_t p = fork();
+            if (p == 0){
+              char *argv[] = { "sh", "-c", input + 4, 0 };
+              execvp(argv[0], argv);
+              fprintf(stderr, "Failed to exec shell on %s", input + 4);
+              f = true;
+              exit(1);
+              //continue;
+            }
 
        // По сигналу SIGHUP вывести "Configuration reloaded"
         signal (SIGHUP, handle_SIGHUP);
