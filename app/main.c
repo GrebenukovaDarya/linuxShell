@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <signal.h>
+#include <stdint.h>
  
 #define BUFFER_SIZE 1024
 #define HISTORY_SIZE 100
@@ -20,17 +22,13 @@ void save_history_to_file(char history[][BUFFER_SIZE], int count) {
     fclose(file);
 }
 
+//sighup
 void handle_SIGHUP(int signal) {
     if (signal == SIGHUP) {
         printf("Configuration reloaded\n");
     }
 }
 
-void binary_ex() {
-    //Qdir::currentPath();
-    //system();
-    
-}
  
 int main() {
     char input[BUFFER_SIZE];
@@ -85,12 +83,7 @@ int main() {
         }
 
        //binary
-/*
-       if (strncmp(input, "cat ", 4) == 0) {
-           binary_ex(input + 4);
-           continue;
-       }
-*/
+
 
        // По сигналу SIGHUP вывести "Configuration reloaded"
         signal (SIGHUP, handle_SIGHUP);
