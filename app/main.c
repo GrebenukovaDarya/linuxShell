@@ -10,10 +10,10 @@
 #define HISTORY_FILE "command_history.txt"
  
 //history
-void save_history_to_file(char history[][BUFFER_SIZE], int count) {
+void save_history(char history[][BUFFER_SIZE], int count) {
     FILE *file = fopen(HISTORY_FILE, "a");
     if (file == NULL) {
-        perror("Не удалось открыть файл для записи истории");
+        perror("history file not found");
         return;
     }
     for (int i = 0; i < count; i++) {
@@ -26,6 +26,40 @@ void save_history_to_file(char history[][BUFFER_SIZE], int count) {
 void handle_SIGHUP(int signal) {
     if (signal == SIGHUP) {
         printf("Configuration reloaded\n");
+    }
+}
+
+//10
+void disk_check(char* dname) {
+ 
+    while (*dname == ' ') {
+        dname++;
+    }
+    char full_path[128];
+    snprintf(full_path, sizeof(full_path), "/dev/%s", dname);
+
+    FILE* disk = fopen(full_path, "rb");
+    if (disk == NULL) {
+        printf("error\n");
+        return;
+    }
+ 
+    if (fseek(disk, 510, SEEK_SET) != 0) {
+        printf("error\n");
+        fclose(disk);
+        return;
+    }
+    uint8_t signature[2];
+    if (fread(signature, 1, 2, disk) != 2) {
+        printf("error\n");
+        fclose(disk);
+        return;
+    }
+    fclose(disk);
+    if (signature[0] == 0x55 && signature[1] == 0xAA) {
+        printf("disk %s is bootable.\n", dname);
+    } else {
+        printf("disk %s is not bootable.\n", dname);
     }
 }
 
@@ -60,9 +94,11 @@ int main() {
             history_count++;
         }
 
+     /*
        if(history_count >= HISTORY_SIZE) {
             history_count = 0;
        }
+     */
 
         //echo $PATH
         if(strcmp(input, "e $PATH")==0) {
@@ -91,17 +127,21 @@ int main() {
               fprintf(stderr, "Failed to exec shell on %s", input + 4);
               f = true;
               exit(1);
-              //continue;
+             
+              continue;
             }
 
        // По сигналу SIGHUP вывести "Configuration reloaded"
         signal (SIGHUP, handle_SIGHUP);
         
-       //10. По `\l /dev/sda` получить информацию о разделах в системе
+       // По `\l /dev/sda` определить является ли диск загрузочным
+         if (strncmp(input, "\\l", 2) == 0) {
+            char* dname = input + 3;
+            disk_check(dname);
+            continue;
+        }
         
        //11. По `\cron` подключить VFS в /tmp/vfs со списком задач в планировщике
-        
-       //12. По `\mem <procid>` получить дамп памяти процесса
      
         printf("there is no command: %s\n", input);
        
@@ -109,7 +149,7 @@ int main() {
     while (!feof(stdin));
  
     //history
-    save_history_to_file(history, history_count);
+    save_history(history, history_count);
  
     return 0;
 }
