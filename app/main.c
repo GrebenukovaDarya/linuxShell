@@ -32,6 +32,7 @@ void save_history(char history[][BUFFER_SIZE], int count) {
 void handle_SIGHUP(int signal) {
     if (signal == SIGHUP) {
         printf("Configuration reloaded\n");
+        exit(0);
     }
 }
 
@@ -78,6 +79,7 @@ int main() {
     do {
         printf("USER$ ");
         fflush(stdout);
+        bool check=false;
 
         // input
         if (fgets(input, BUFFER_SIZE, stdin) == NULL) {
@@ -108,6 +110,7 @@ int main() {
 
         //echo $PATH
         if(strcmp(input, "e $PATH")==0) {
+            check=true;
             char *path = getenv("PATH");
             if (path!=NULL){
                 printf("%s\n", path);
@@ -120,6 +123,7 @@ int main() {
  
         // echo
         if (strncmp(input, "echo ", 5) == 0) {
+            check=true;
             printf("%s\n", input + 5);
             continue;
         }
@@ -127,6 +131,7 @@ int main() {
        //binary
 
         if (strncmp(input, "run ", 4) == 0){
+            check=true;
             pid_t p = fork();
             if (p == 0){
               char *argv[] = { "sh", "-c", input + 4, 0 };
@@ -137,6 +142,7 @@ int main() {
              
               continue;
             }
+}
 
 
        // По сигналу SIGHUP вывести "Configuration reloaded"
@@ -144,14 +150,16 @@ int main() {
         
        // По `\l /dev/sda` определить является ли диск загрузочным
          if (strncmp(input, "\\l", 2) == 0) {
+            check=true;
             char* dname = input + 3;
             disk_check(dname);
             continue;
         }
         
        //11. По `\cron` подключить VFS в /tmp/vfs со списком задач в планировщике
-     
+        if(check==false){
         printf("there is no command: %s\n", input);
+        }
        
     }
     while (!feof(stdin));
