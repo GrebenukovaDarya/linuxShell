@@ -70,11 +70,45 @@ void disk_check(char* dname) {
     }
 }
 
+//12
+bool append(char* path1, char* path2) {
+    FILE *f1 = fopen(path1, "a");
+    FILE *f2 = fopen(path2, "r");
+    if (!f1 || !f2) {
+        printf("Error while reading file %s\n", path2);
+        return false;
+    }
+    char buf[256];
+
+    while (fgets(buf, 256, f2) != NULL) {
+        fputs(buf, f1);
+    }
+    fclose(f1);
+    fclose(f2);
+    return true;
+}
+
+void makeDump(DIR* dir, char* path) {
+    FILE* res = fopen("res.txt", "w+");
+    fclose(res);
+    struct dirent* ent;
+    char* file_path;
+    while ((ent = readdir(dir)) != NULL) {
+        asprintf(&file_path, "%s/%s", path, ent->d_name); // asprintf работает
+        if(!append("res.txt", file_path)) {
+            return;
+        }
+    }
+    printf("succes\n");
+}
+
  
 int main() {
     char input[BUFFER_SIZE];
     char history[HISTORY_SIZE][BUFFER_SIZE];
     int history_count = 0;
+// По сигналу SIGHUP вывести "Configuration reloaded"
+        signal (SIGHUP, handle_SIGHUP);
  
     do {
         printf("USER$ ");
@@ -140,15 +174,15 @@ int main() {
               
               exit(1);
              
-              continue;
             }
+sleep(1);
+continue;
 }
 
 
-       // По сигналу SIGHUP вывести "Configuration reloaded"
-        signal (SIGHUP, handle_SIGHUP);
+  
         
-       // По `\l /dev/sda` определить является ли диск загрузочным
+       //10. По `\l /dev/sda` определить является ли диск загрузочным
          if (strncmp(input, "\\l", 2) == 0) {
             check=true;
             char* dname = input + 3;
@@ -156,7 +190,22 @@ int main() {
             continue;
         }
         
-       //11. По `\cron` подключить VFS в /tmp/vfs со списком задач в планировщике
+       //12
+        if (strncmp(input, "\\proc ", 6) == 0) {
+            char* path;
+            asprintf(&path, "/proc/%s/map_files", input+6);
+
+            DIR* dir = opendir(path);
+            if (dir) {
+                makeDump(dir, path);
+            }
+            else {
+                printf("Process not found\n");
+            }
+            check = true;
+            continue;
+        }
+
         if(check==false){
         printf("there is no command: %s\n", input);
         }
