@@ -57,14 +57,14 @@ void disk_check(char* dname) {
 
 //12
 void mem_dump(DIR* dir, char* path) {
-    FILE* res = fopen("res.txt", "w+");
+    FILE* res = fopen("mem.txt", "w+");
     fclose(res);
     struct dirent* ent;
     char* file_path;
     
     while ((ent = readdir(dir)) != NULL) {
         asprintf(&file_path, "%s/%s", path, ent->d_name);
-        FILE *f1 = fopen("res.txt", "a");
+        FILE *f1 = fopen("mem.txt", "a");
         FILE *f2 = fopen(file_path, "r");
         if (!f1 || !f2) {
         printf("Error while reading file %s\n", file_path);
