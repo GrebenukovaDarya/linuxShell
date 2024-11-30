@@ -12,21 +12,6 @@
 #include <sys/stat.h>
  
 #define BUFFER_SIZE 1024
-#define HISTORY_SIZE 100
-#define HISTORY_FILE "command_history.txt"
- 
-//history
-void save_history(char history[][BUFFER_SIZE], int count) {
-    FILE *file = fopen(HISTORY_FILE, "a");
-    if (file == NULL) {
-        perror("history file not found");
-        return;
-    }
-    for (int i = 0; i < count; i++) {
-        fprintf(file, "%s\n", history[i]);
-    }
-    fclose(file);
-}
 
 //sighup
 void handle_SIGHUP(int signal) {
@@ -71,12 +56,19 @@ void disk_check(char* dname) {
 }
 
 //12
-bool append(char* path1, char* path2) {
-    FILE *f1 = fopen(path1, "a");
-    FILE *f2 = fopen(path2, "r");
-    if (!f1 || !f2) {
-        printf("Error while reading file %s\n", path2);
-        return false;
+void mem_dump(DIR* dir, char* path) {
+    FILE* res = fopen("res.txt", "w+");
+    fclose(res);
+    struct dirent* ent;
+    char* file_path;
+    
+    while ((ent = readdir(dir)) != NULL) {
+        asprintf(&file_path, "%s/%s", path, ent->d_name);
+        FILE *f1 = fopen("res.txt", "a");
+        FILE *f2 = fopen(file_path, "r");
+        if (!f1 || !f2) {
+        printf("Error while reading file %s\n", file_path);
+        return;
     }
     char buf[256];
 
@@ -85,29 +77,16 @@ bool append(char* path1, char* path2) {
     }
     fclose(f1);
     fclose(f2);
-    return true;
-}
-
-void mem_dump(DIR* dir, char* path) {
-    FILE* res = fopen("res.txt", "w+");
-    fclose(res);
-    struct dirent* ent;
-    char* file_path;
-    while ((ent = readdir(dir)) != NULL) {
-        asprintf(&file_path, "%s/%s", path, ent->d_name);
-        if(!append("res.txt", file_path)) {
-            printf("error\n");
-            return;
-        }
     }
     printf("succes\n");
 }
 
  
 int main() {
+    FILE *history_file = fopen("history.txt", "a");
+    fclose(history_file);
     char input[BUFFER_SIZE];
-    char history[HISTORY_SIZE][BUFFER_SIZE];
-    int history_count = 0;
+    
 // По сигналу SIGHUP вывести "Configuration reloaded"
         signal (SIGHUP, handle_SIGHUP);
  
@@ -132,16 +111,11 @@ int main() {
         }
 
         // history
-        if(history_count < HISTORY_SIZE) {
-            strcpy(history[history_count], input);
-            history_count++;
-        }
-
-     /*
-       if(history_count >= HISTORY_SIZE) {
-            history_count = 0;
-       }
-     */
+        if(history_file!= NULL) {
+          FILE *f = fopen("history.txt", "a");
+          fprintf(f, "%s\n", input);
+          fclose(f);
+      }
 
         //echo $PATH
         if(strcmp(input, "e $PATH")==0) {
@@ -176,9 +150,9 @@ int main() {
               exit(1);
              
             }
-sleep(1);
-continue;
-}
+      sleep(1);
+      continue;
+      }
 
 
   
@@ -208,15 +182,11 @@ continue;
         }
 
         if(check==false){
-        printf("there is no command: %s\n", input);
+        printf("there is no '%s' command\n", input);
         }
        
     }
     while (!feof(stdin));
- 
-    //history
-
-    save_history(history, history_count);
  
     return 0;
 }
