@@ -88,14 +88,15 @@ bool append(char* path1, char* path2) {
     return true;
 }
 
-void makeDump(DIR* dir, char* path) {
+void mem_dump(DIR* dir, char* path) {
     FILE* res = fopen("res.txt", "w+");
     fclose(res);
     struct dirent* ent;
     char* file_path;
     while ((ent = readdir(dir)) != NULL) {
-        asprintf(&file_path, "%s/%s", path, ent->d_name); // asprintf работает
+        asprintf(&file_path, "%s/%s", path, ent->d_name);
         if(!append("res.txt", file_path)) {
+            printf("error\n");
             return;
         }
     }
@@ -191,13 +192,13 @@ continue;
         }
         
        //12
-        if (strncmp(input, "\\proc ", 6) == 0) {
+        if (strncmp(input, "\\mem ", 5) == 0) {
             char* path;
-            asprintf(&path, "/proc/%s/map_files", input+6);
+            asprintf(&path, "/proc/%s/map_files", input+5);
 
             DIR* dir = opendir(path);
             if (dir) {
-                makeDump(dir, path);
+                mem_dump(dir, path);
             }
             else {
                 printf("Process not found\n");
