@@ -1,0 +1,75 @@
+html{
+    background-color: #a3d092;
+}
+
+body{
+    margin:0;
+}
+
+.slick-track{
+    display: flex;
+    min-width:0;
+}
+
+.slick-list{
+    overflow: hidden;
+}
+.slider{
+    margin-top:10%;
+    position: relative;
+    padding: 5%;
+    background-color: rgba(255, 255, 213, 0.674);
+    border:10px;
+    border-color: #a3d092;
+}
+.slider .slick-arrow{
+    position:absolute;
+    top:45%;
+    z-index:10;
+    font-size:0;
+    width: 30px;
+    height: 30px;
+    color:#ffffff;
+    border:0;
+}
+
+.slider .slick-arrow.slick-prev{
+    left:20px;
+    background: url('images/Flower.png') 0 0 / 100% no-repeat;
+}
+
+.slider .slick-arrow.slick-next{
+    right:20px;
+    background: url('images/Flower.png') 0 0 / 100% no-repeat;
+}
+
+.slider .slick-dots{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    margin:auto;
+    padding:0;
+}
+
+.slider .slick-dots li{
+    list-style:none;
+    margin:10px;
+}
+
+.slider .slick-dots button{
+    font-size:0;
+    width: 16px;
+    height:16px;
+    background-color:rgb(111, 104, 107);
+    border-radius: 100%;
+    border-color:rgb(229, 167, 190);
+}
+
+.slider .slick-dots li.slick-active button{
+    background-color:rgb(229, 167, 190);
+    border-color:#a3d092;
+}
+
+.slider .slider_item{
+    margin:auto;
+}

@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  bd:
+    image: postgres
+    container_name: my_postgres
+    environment:
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./postgres/:/var/lib/postgresql/data
+  apache:
+    image: httpd:latest
+    container_name: my-apache-app
+    ports:
+      - '8082:80'
+    volumes:
+      - ./web/lab7/:/usr/local/apache2/htdocs
